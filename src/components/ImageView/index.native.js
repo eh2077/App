@@ -100,6 +100,7 @@ class ImageView extends PureComponent {
      * @param {Object} nativeEvent
      */
     configureImageZoom({nativeEvent}) {
+        console.log('[ImageView] onLoad event triggered');
         // Wait till animations are over to prevent stutter in navigation animation
         this.state.interactionPromise = InteractionManager.runAfterInteractions(() => {
             let imageWidth = nativeEvent.width;
@@ -140,6 +141,7 @@ class ImageView extends PureComponent {
     }
 
     imageLoadingStart() {
+        console.log('[ImageView] onLoadStart event triggered');
         if (this.state.isLoading) {
             return;
         }

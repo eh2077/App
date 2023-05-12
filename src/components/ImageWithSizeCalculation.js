@@ -52,10 +52,12 @@ class ImageWithSizeCalculation extends PureComponent {
     }
 
     imageLoadingStart() {
+        console.log('[ImageWithSizeCalculation] onLoadStart event triggered');
         this.setState({isLoading: true});
     }
 
     imageLoadingEnd() {
+        console.log('[ImageWithSizeCalculation] onLoad event triggered');
         this.setState({isLoading: false});
     }
 
