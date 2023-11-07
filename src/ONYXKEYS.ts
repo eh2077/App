@@ -234,6 +234,9 @@ const ONYXKEYS = {
     // Max width supported for HTML <canvas> element
     MAX_CANVAS_WIDTH: 'maxCanvasWidth',
 
+    // Recent accessed reportID list
+    RECENTLY_ACCESSED_REPORT_ID_LIST: 'recentlyAccessedReportIDs',
+
     /** Collection Keys */
     COLLECTION: {
         DOWNLOAD: 'download_',

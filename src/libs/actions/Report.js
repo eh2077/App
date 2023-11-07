@@ -101,6 +101,15 @@ Onyx.connect({
     },
 });
 
+let recentlyAccessedReportIDs = [];
+Onyx.connect({
+    key: ONYXKEYS.RECENTLY_ACCESSED_REPORT_ID_LIST,
+    waitForCollectionCallback: true,
+    callback: (val) => {
+        recentlyAccessedReportIDs = val;
+    },
+});
+
 const allReports = {};
 let conciergeChatReportID;
 const typingWatchTimers = {};
@@ -2016,6 +2025,32 @@ function getCurrentUserAccountID() {
 }
 
 /**
+ * Update recently accessed reportID
+ *
+ * @param {String} currentReportID
+ * @param {Boolean} shouldRemoveCurrentReportID
+ * @returns {String} Returns the most recent accessed reportID
+ */
+function updateRecentlyAccessedReportID(currentReportID, shouldRemoveCurrentReportID = false) {
+    const reportIDs = _.filter(recentlyAccessedReportIDs, (reportID) => reportID !== currentReportID);
+    if (!shouldRemoveCurrentReportID) {
+        reportIDs.push(currentReportID);
+    }
+
+    // We can discuss the number of reportIDs need to be saved
+    if (reportIDs.length > 10) {
+        reportIDs.shift();
+    }
+
+    console.log('current recentlyAccessedReportIDs = ', reportIDs);
+
+    // We want to save recently accessed reportIDs to Onyx to be used after refreshing the page
+    Onyx.set(ONYXKEYS.RECENTLY_ACCESSED_REPORT_ID_LIST, reportIDs);
+
+    return reportIDs.length > 0 ? reportIDs[reportIDs.length - 1] : '';
+}
+
+/**
  * Leave a report by setting the state to submitted and closed
  *
  * @param {String} reportID
@@ -2077,7 +2112,10 @@ function leaveRoom(reportID, isWorkspaceMemberLeavingWorkspaceRoom = false) {
         },
     );
 
-    if (isWorkspaceMemberLeavingWorkspaceRoom) {
+    const lastAccessedReportID = updateRecentlyAccessedReportID(reportID, true);
+    if (lastAccessedReportID) {
+        Navigation.dismissModal(lastAccessedReportID);
+    } else {
         const participantAccountIDs = PersonalDetailsUtils.getAccountIDsByLogins([CONST.EMAIL.CONCIERGE]);
         const chat = ReportUtils.getChatByParticipants(participantAccountIDs);
         Navigation.navigate(ROUTES.REPORT_WITH_ID.getRoute(chat.reportID));
@@ -2541,6 +2579,7 @@ export {
     showReportActionNotification,
     toggleEmojiReaction,
     shouldShowReportActionNotification,
+    updateRecentlyAccessedReportID,
     leaveRoom,
     inviteToRoom,
     removeFromRoom,
