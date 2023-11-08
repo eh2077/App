@@ -2046,6 +2046,7 @@ function updateRecentlyAccessedReportID(currentReportID, shouldRemoveCurrentRepo
 
     // We want to save recently accessed reportIDs to Onyx to be used after refreshing the page
     Onyx.set(ONYXKEYS.RECENTLY_ACCESSED_REPORT_ID_LIST, reportIDs);
+    recentlyAccessedReportIDs = reportIDs;
 
     return reportIDs.length > 0 ? reportIDs[reportIDs.length - 1] : '';
 }
@@ -2113,6 +2114,7 @@ function leaveRoom(reportID, isWorkspaceMemberLeavingWorkspaceRoom = false) {
     );
 
     const lastAccessedReportID = updateRecentlyAccessedReportID(reportID, true);
+    console.log('removing reportID from stack: ', reportID);
     if (lastAccessedReportID) {
         Navigation.dismissModal(lastAccessedReportID);
     } else {
