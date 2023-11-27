@@ -96,6 +96,15 @@ Onyx.connect({
     },
 });
 
+let recentlyAccessedReportIDs = [];
+Onyx.connect({
+    key: ONYXKEYS.RECENTLY_ACCESSED_REPORT_ID_LIST,
+    waitForCollectionCallback: true,
+    callback: (val) => {
+        recentlyAccessedReportIDs = val;
+    },
+});
+
 function getPolicyTags(policyID) {
     return lodashGet(allPolicyTags, `${ONYXKEYS.COLLECTION.POLICY_TAGS}${policyID}`, {});
 }
@@ -627,7 +636,7 @@ function findLastAccessedReport(reports, ignoreDomainRooms, policies, isFirstTim
         );
     }
 
-    return adminReport || _.last(sortedReports);
+    return adminReport || allReports[`${ONYXKEYS.COLLECTION.REPORT}${_.last(recentlyAccessedReportIDs) || ''}`] || _.last(sortedReports);
 }
 
 /**
