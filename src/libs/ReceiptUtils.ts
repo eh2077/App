@@ -12,7 +12,7 @@ import * as FileUtils from './fileDownload/FileUtils';
 type ThumbnailAndImageURI = {
     image: ImageSourcePropType | string;
     thumbnail: ImageSourcePropType | string | null;
-    transaction?: Transaction;
+    transaction: Transaction;
     isLocalFile?: boolean;
 };
 
@@ -34,6 +34,7 @@ function getThumbnailAndImageURIs(transaction: Transaction, receiptPath: string 
     // filename of uploaded image or last part of remote URI
     const filename = transaction?.filename ?? receiptFileName ?? '';
     const isReceiptImage = Str.isImage(filename);
+    const isReceiptPDF = Str.isPDF(filename);
 
     const hasEReceipt = transaction?.hasEReceipt;
 
@@ -43,12 +44,12 @@ function getThumbnailAndImageURIs(transaction: Transaction, receiptPath: string 
         }
 
         // For local files, we won't have a thumbnail yet
-        if (isReceiptImage && (path.startsWith('blob:') || path.startsWith('file:'))) {
-            return {thumbnail: null, image: path, isLocalFile: true};
+        if ((isReceiptImage || isReceiptPDF) && (path.startsWith('blob:') || path.startsWith('file:'))) {
+            return {thumbnail: null, image: path, isLocalFile: true, transaction};
         }
 
         if (isReceiptImage) {
-            return {thumbnail: `${path}.1024.jpg`, image: path};
+            return {thumbnail: `${path}.1024.jpg`, image: path, transaction};
         }
     }
 
@@ -67,7 +68,7 @@ function getThumbnailAndImageURIs(transaction: Transaction, receiptPath: string 
     }
 
     const isLocalFile = typeof path === 'number' || path.startsWith('blob:') || path.startsWith('file:') || path.startsWith('/');
-    return {thumbnail: image, image: path, isLocalFile};
+    return {thumbnail: image, image: path, isLocalFile, transaction};
 }
 
 // eslint-disable-next-line import/prefer-default-export

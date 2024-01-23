@@ -5,6 +5,7 @@ import {View} from 'react-native';
 import AttachmentModal from '@components/AttachmentModal';
 import EReceiptThumbnail from '@components/EReceiptThumbnail';
 import Image from '@components/Image';
+import PDFThumbnail from '@components/PDFThumbnail';
 import PressableWithoutFocus from '@components/Pressable/PressableWithoutFocus';
 import {ShowContextMenuContext} from '@components/ShowContextMenuContext';
 import ThumbnailImage from '@components/ThumbnailImage';
@@ -62,6 +63,15 @@ function ReportActionItemImage({thumbnail, image, enablePreviewModal = false, tr
                 previewSourceURL={thumbnailSource}
                 style={[styles.w100, styles.h100]}
                 isAuthTokenRequired
+                shouldDynamicallyResize={false}
+            />
+        );
+    } else if (transaction?.filename && Str.isPDF(transaction.filename)) {
+        receiptImageComponent = (
+            <PDFThumbnail
+                previewSourceURL={imageSource}
+                style={[styles.w100, styles.h100]}
+                isAuthTokenRequired={!isLocalFile}
                 shouldDynamicallyResize={false}
             />
         );

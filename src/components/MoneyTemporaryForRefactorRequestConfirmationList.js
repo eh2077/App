@@ -6,6 +6,7 @@ import React, {useCallback, useEffect, useMemo, useReducer, useRef, useState} fr
 import {View} from 'react-native';
 import {withOnyx} from 'react-native-onyx';
 import _ from 'underscore';
+import PDFThumbnail from '@components/PDFThumbnail';
 import useLocalize from '@hooks/useLocalize';
 import usePermissions from '@hooks/usePermissions';
 import useTheme from '@hooks/useTheme';
@@ -43,6 +44,7 @@ import taxPropTypes from './taxPropTypes';
 import Text from './Text';
 import transactionPropTypes from './transactionPropTypes';
 import withCurrentUserPersonalDetails, {withCurrentUserPersonalDetailsDefaultProps, withCurrentUserPersonalDetailsPropTypes} from './withCurrentUserPersonalDetails';
+import Str from 'expensify-common/lib/str';
 
 const propTypes = {
     /** Callback to inform parent modal of success */
@@ -639,14 +641,23 @@ function MoneyTemporaryForRefactorRequestConfirmationList({
                 </View>
             )}
             {(receiptImage || receiptThumbnail) && (
-                <Image
-                    style={styles.moneyRequestImage}
-                    source={{uri: receiptThumbnail || receiptImage}}
-                    // AuthToken is required when retrieving the image from the server
-                    // but we don't need it to load the blob:// or file:// image when starting a money request / split bill
-                    // So if we have a thumbnail, it means we're retrieving the image from the server
-                    isAuthTokenRequired={!_.isEmpty(receiptThumbnail)}
-                />
+                Str.isPDF(receiptFilename) ? (
+                    <PDFThumbnail
+                        previewSourceURL={receiptImage}
+                        style={styles.moneyRequestImage}
+                        isAuthTokenRequired={false}
+                        // shouldDynamicallyResize={false}
+                    />
+                ) : (
+                    <Image
+                        style={styles.moneyRequestImage}
+                        source={{uri: receiptThumbnail || receiptImage}}
+                        // AuthToken is required when retrieving the image from the server
+                        // but we don't need it to load the blob:// or file:// image when starting a money request / split bill
+                        // So if we have a thumbnail, it means we're retrieving the image from the server
+                        isAuthTokenRequired={!_.isEmpty(receiptThumbnail)}
+                    />
+                )
             )}
             {shouldShowSmartScanFields && (
                 <MenuItemWithTopDescription
